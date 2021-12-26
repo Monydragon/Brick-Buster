@@ -125,7 +125,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   points: 1
   hitsToBreak: 3
-  chanceToDropItem: 25
+  chanceToDropItem: 50
   lifePowerup: {fileID: 3250838248190730613, guid: e5ee3c93f4a72e141adad4b99b3c064d, type: 3}
   brickSprites:
   - {fileID: 21300000, guid: cb963e3f857cc364ea52261f0ffd6e14, type: 3}
@@ -133,3 +133,5 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 0d4392386dbdd7843a3194cbbf109559, type: 3}
   - {fileID: 21300000, guid: 1ac950c9755781d41be9a1955e0f5179, type: 3}
   - {fileID: 21300000, guid: 27419b59ff732304eb0df7bc0e536651, type: 3}
+  hitSound: {fileID: 8300000, guid: 61f1aff567e154c42ad4d822a6adc0a3, type: 3}
+  brickExplodedSound: {fileID: 8300000, guid: 89e625f99e2f6cb478132d3d19b132a2, type: 3}

@@ -5,12 +5,14 @@ using UnityEngine;
 public class PowerupController : MonoBehaviour
 {
     public int lifes = 1;
+    public AudioClip powerupSFX;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
             GameManager.GM.GainLife(lifes);
+            AudioManager.Instance.Play(powerupSFX, Camera.main.transform);
             Destroy(gameObject);
         }
     }
