@@ -189,14 +189,17 @@ public class AudioManager : Singleton<AudioManager>
         {
             case AudioChannel.Master:
                 masterMixer.SetFloat("MasterVolume", adjustedVolume);
+                PlayerPrefs.SetInt("MasterVolume", volume);
                 break;
 
             case AudioChannel.Sound:
                 masterMixer.SetFloat("SoundVolume", adjustedVolume);
+                PlayerPrefs.SetInt("SoundVolume", volume);
                 break;
 
             case AudioChannel.Music:
                 masterMixer.SetFloat("MusicVolume", adjustedVolume);
+                PlayerPrefs.SetInt("MusicVolume", volume);
                 break;
         }
     }

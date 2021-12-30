@@ -11,7 +11,7 @@ public class PowerupController : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            GameManager.GM.GainLife(lifes);
+            EventManager.LivesChanged(lifes);
             AudioManager.Instance.Play(powerupSFX, Camera.main.transform);
             Destroy(gameObject);
         }

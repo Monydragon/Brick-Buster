@@ -48,7 +48,7 @@ public class BallController : MonoBehaviour
         {
             rb.velocity = Vector2.zero;
             inPlay = false;
-            GameManager.GM.LoseLife();
+            EventManager.LivesChanged(-1);
         }
     }
 

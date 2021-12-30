@@ -14,12 +14,14 @@ public class BrickController : MonoBehaviour
     public void HitBrick()
     {
         hitsToBreak--;
+        EventManager.BrickHit();
         AudioManager.Instance.Play(hitSound, Camera.main.transform);
         Debug.Log(hitSound.name);
         if (hitsToBreak <= 0)
         {
-            GameManager.GM.AddPoints(points);
-            GameManager.GM.UpdateBricks();
+            EventManager.ScoreChanged(points);
+            //GameManager.GM.AddPoints(points);
+            GameManager.Instance.UpdateBricks();
 
             var rndChance = Random.Range(1, 100);
             if (rndChance <= chanceToDropItem)
@@ -28,7 +30,7 @@ public class BrickController : MonoBehaviour
                 Instantiate(lifePowerup, transform.position, Quaternion.identity);
             }
             AudioManager.Instance.Play(brickExplodedSound, Camera.main.transform);
-
+            EventManager.BrickDestroyed();
             Destroy(this.gameObject);
         }
         else

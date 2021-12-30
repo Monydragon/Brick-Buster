@@ -4,98 +4,82 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System;
+using yaSingleton;
 
-public class GameManager : MonoBehaviour
+[CreateAssetMenu(fileName = "Game Manager", menuName = "Singletons/GameManager")]
+public class GameManager : Singleton<GameManager>
 {
-    public static GameManager GM;
     public int lives = 3;
     public int score = 0;
     public int numberOfBricks;
-    public bool gameOver;
-    public int currentLevelIndex = 0;
+    public int currentLevelIndex = 1;
 
-    public TMP_Text livesText;
-    public TMP_Text scoreText;
-    public TMP_Text gameoverScoreText;
-    public TMP_Text nextLevelScoreText;
-    public TMP_Text nextLevelText;
-
-    public GameObject gameOverPanel;
-    public GameObject loadLevelPanel;
-
-
-    private void Awake()
+    private void OnEnable()
     {
-        if (GM == null)
-        {
-            GM = this;
-        }
-        if (GM != null && GM != this)
-        {
-            Destroy(gameObject);
-        }
+        EventManager.onGameReset += EventManager_onGameReset;
+        EventManager.onScoreChanged += EventManager_onScoreChanged;
+        EventManager.onLivesChanged += EventManager_onLivesChanged;
+        EventManager.onWinLevel += EventManager_onWinLevel;
+        EventManager.onLoseLevel += EventManager_onLoseLevel;
+        EventManager.onBrickHit += EventManager_onBrickHit;
+        EventManager.onBrickDestroyed += EventManager_onBrickDestroyed;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void EventManager_onGameReset()
     {
-        currentLevelIndex = PlayerPrefs.GetInt("PLAYER_LEVEL");
-        if(currentLevelIndex == 0)
-        {
-            PlayerPrefs.SetInt("PLAYER_SCORE", 0);
-            PlayerPrefs.SetInt("PLAYER_LIVES", 3);
-        }
-        if (PlayerPrefs.HasKey("PLAYER_SCORE"))
-        {
-            score = PlayerPrefs.GetInt("PLAYER_SCORE");
-        }
-
-        if (PlayerPrefs.HasKey("PLAYER_LIVES"))
-        {
-            lives = PlayerPrefs.GetInt("PLAYER_LIVES");
-        }
-        livesText.text = $"Lives: {lives}";
-        scoreText.text = $"Score: {score}";
+        score = 0;
+        lives = 3;
+        currentLevelIndex = 1;
         UpdateBricks();
-
     }
 
-    // Update is called once per frame
-    void Update()
+    private void EventManager_onBrickDestroyed()
     {
-        
+        UpdateBricks();
     }
 
-    public void AddPoints(int val)
+    private void EventManager_onBrickHit()
     {
-        score += val;
-        scoreText.text = $"Score: {score}";
     }
 
-    public void LoseLife()
+    private void EventManager_onLoseLevel()
     {
-        lives--;
-        livesText.text = $"Lives: {lives}";
+        //ResetGame();
+    }
+
+    private void EventManager_onWinLevel()
+    {
+        //NextLevel();
+    }
+
+    private void EventManager_onLivesChanged(int value)
+    {
+        lives += value;
         if(lives <= 0)
         {
-            gameOver = true;
-            gameOverPanel.SetActive(true);
-            gameoverScoreText.text = $"Final Score: {score}";
-
+            EventManager.LevelFail();
         }
     }
 
-    public void GainLife(int val)
+    private void EventManager_onScoreChanged(int value)
     {
-        lives += val;
-        livesText.text = $"Lives: {lives}";
+        score += value;
+    }
+
+    private void OnDisable()
+    {
+        EventManager.onGameReset -= EventManager_onGameReset;
+        EventManager.onScoreChanged -= EventManager_onScoreChanged;
+        EventManager.onLivesChanged -= EventManager_onLivesChanged;
+        EventManager.onWinLevel -= EventManager_onWinLevel;
+        EventManager.onLoseLevel -= EventManager_onLoseLevel;
+        EventManager.onBrickHit -= EventManager_onBrickHit;
+        EventManager.onBrickDestroyed -= EventManager_onBrickDestroyed;
     }
 
     public void ResetGame()
     {
-        PlayerPrefs.SetInt("PLAYER_SCORE", 0);
-        PlayerPrefs.SetInt("PLAYER_LIVES", 3);
-        PlayerPrefs.SetInt("PLAYER_LEVEL", 0);
+        EventManager.GameReset();
         SceneManager.LoadScene("Level1");
     }
 
@@ -104,19 +88,12 @@ public class GameManager : MonoBehaviour
         numberOfBricks = GameObject.FindGameObjectsWithTag("Brick").Length;
         if (numberOfBricks <= 1)
         {
-            gameOver = true;
-            loadLevelPanel.SetActive(true);
-            nextLevelScoreText.text = $"Score: {score}";
-            nextLevelText.text = $"Congratulations\nLevel {currentLevelIndex + 1} Completed";
+            EventManager.LevelComplete();
         }
     }
     public void NextLevel()
     {
-        currentLevelIndex = PlayerPrefs.GetInt("PLAYER_LEVEL");
-        currentLevelIndex++;
-        PlayerPrefs.SetInt("PLAYER_SCORE", score);
-        PlayerPrefs.SetInt("PLAYER_LIVES", lives);
-        PlayerPrefs.SetInt("PLAYER_LEVEL", currentLevelIndex);
+        currentLevelIndex = SceneManager.GetActiveScene().buildIndex + 1;
         SceneManager.LoadScene(currentLevelIndex);
     }
 }
